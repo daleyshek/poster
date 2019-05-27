@@ -95,7 +95,7 @@ func DrawPoster(s Style) (fileName string, err error) {
 	var resizedw, resizedh int
 	if DesignWidth/ImageHeight < pic.Bounds().Dx()/pic.Bounds().Dy() {
 		// 拉伸至高度和设计高度一致
-		resizedw = int(pic.Bounds().Dx() * DesignHeight / pic.Bounds().Dy())
+		resizedw = int(pic.Bounds().Dx() * ImageHeight / pic.Bounds().Dy())
 		resizedh = ImageHeight
 	} else {
 		// 拉伸至宽度和设计宽度一致
