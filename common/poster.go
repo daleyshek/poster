@@ -93,20 +93,20 @@ func DrawPoster(s Style) (fileName string, err error) {
 
 	// 更改尺寸以适应画布大小
 	var resizedw, resizedh int
-	if DesignWidth/ImageHeight < pic.Bounds().Dx()/pic.Bounds().Dy() {
+	if float32(DesignWidth)/float32(ImageHeight) < float32(pic.Bounds().Dx())/float32(pic.Bounds().Dy()) {
 		// 拉伸至高度和设计高度一致
-		resizedw = int(pic.Bounds().Dx() * ImageHeight / pic.Bounds().Dy())
+		resizedw = pic.Bounds().Dx() * ImageHeight / pic.Bounds().Dy()
 		resizedh = ImageHeight
 	} else {
 		// 拉伸至宽度和设计宽度一致
-		resizedh = int(pic.Bounds().Dy() * DesignWidth / pic.Bounds().Dx())
+		resizedh = pic.Bounds().Dy() * DesignWidth / pic.Bounds().Dx()
 		resizedw = DesignWidth
 	}
 	picResized := transform.Resize(pic, resizedw, resizedh, transform.Linear)
 
 	// 拉伸至中心完全显示
 	draw.Draw(rgba, image.Rect(0, 0, DesignWidth, ImageHeight), picResized,
-		image.Point{int((picResized.Bounds().Dx() - DesignWidth) / 2), int((picResized.Bounds().Dy() - ImageHeight) / 2)},
+		image.Point{(picResized.Bounds().Dx() - DesignWidth) / 2, (picResized.Bounds().Dy() - ImageHeight) / 2},
 		draw.Src)
 
 	// 绘制边框

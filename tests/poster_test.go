@@ -9,10 +9,9 @@ import (
 
 func TestPoster(t *testing.T) {
 	pics := []string{
-		"https://api.mcdsh.com/storage/images/800/KNQF8qGndVSDUjBCCmEGrQ9Zo6nIAL3zvUgtiBui.jpeg",
-		"https://api.mcdsh.com/storage/images/800/hiFqfnzYKLAdtvJgGYbZcOcHMF7AXqRI69dSle3U.jpeg",
-		"https://api.mcdsh.com/storage/images/800/XuAmndgRevkZgFFncTYN1vmyR6BUs8jm1FEsQv4K.jpeg",
 		"https://api.mcdsh.com/storage/images/800/6WCihrJGNKzOA5cbZvIpSKZbjsckmwqA3sSVjQ7n.jpeg",
+		"https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=3827272599,4144405931&fm=27&gp=0.jpg",
+		"https://api.mcdsh.com/storage/images/8qjKVNsh0J9RxriNj4lD7Wgv5GLBfmrNOyWmp7IK.jpeg",
 	}
 
 	for i := range pics {
