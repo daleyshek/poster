@@ -4,7 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
-	"poster/common"
+	"github.com/daleyshek/poster/common"
 )
 
 func main() {

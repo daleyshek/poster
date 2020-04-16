@@ -12,7 +12,7 @@
 
 生成的海报内容包括主图、二维码图、文字内容和标题
 
-![海报](./build/resources/example.jpg)
+![海报](https://s1.ax1x.com/2020/04/16/JkS2pn.jpg)
 
 ***当前分支仅支持命令行调用和http调用***
 
