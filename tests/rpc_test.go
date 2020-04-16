@@ -3,8 +3,9 @@ package tests
 import (
 	"net/rpc"
 	"net/rpc/jsonrpc"
-	"poster/common"
 	"testing"
+
+	"github.com/daleyshek/poster/common"
 )
 
 func testRPC(t *testing.T) {

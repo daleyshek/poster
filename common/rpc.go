@@ -18,7 +18,7 @@ type Poster int
 
 // Qrcode 生成小程序二维码
 func (p *Poster) Qrcode(req *QRCodeReq, r *string) error {
-	fn, err := RequestQRCode(*req, "")
+	fn, err := RequestQRCode(*req, "", "")
 	if err != nil {
 		return err
 	}
@@ -40,6 +40,7 @@ func (p *Poster) Generate(s *Style, r *string) error {
 type BothReq struct {
 	QRCodeReq
 	Style
+	AccessToken string `json:"accessToken"` //微信小程序accessToken
 }
 
 // BothRes 返回两个文件名
@@ -51,7 +52,7 @@ type BothRes struct {
 // Both 先生成二维码，再由二维码生成海报
 func (p *Poster) Both(req *BothReq, r *BothRes) error {
 	// 获取小程序码保存到本地
-	qrcodeName, err := RequestQRCode((*req).QRCodeReq, "")
+	qrcodeName, err := RequestQRCode((*req).QRCodeReq, "", req.AccessToken)
 	if err != nil {
 		log.Println("获取小程序码失败", err)
 		return err

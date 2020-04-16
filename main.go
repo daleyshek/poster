@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+
 	"github.com/daleyshek/poster/common"
 )
 
@@ -32,7 +33,7 @@ func cli() {
 
 	qr := common.QRCodeReq{Scene: *scene, Page: *page, Width: *width}
 	// 获取小程序码保存到本地
-	qrcodeName, err := common.RequestQRCode(qr, "")
+	qrcodeName, err := common.RequestQRCode(qr, "", "")
 	if err != nil {
 		fmt.Println("获取小程序码失败", err)
 		os.Exit(1)

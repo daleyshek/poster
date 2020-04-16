@@ -2,7 +2,7 @@ package tests
 
 import (
 	"fmt"
-	"poster/common"
+	"github.com/daleyshek/poster/common"
 	"strconv"
 	"testing"
 )

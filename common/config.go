@@ -40,6 +40,5 @@ func init() {
 
 	if C.OutputDIR == "" {
 		C.OutputDIR = "output/"
-
 	}
 }

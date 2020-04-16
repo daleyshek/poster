@@ -70,15 +70,21 @@ type QRCodeReq struct {
 // RequestQRCode 获取小程序二维码
 // saveName 不包含后缀，为空的话就是随机文件名
 // 返回文件名和错误，文件存储在OutputDIR目录中
-func RequestQRCode(req QRCodeReq, saveName string) (string, error) {
+func RequestQRCode(req QRCodeReq, saveName string, ak string) (string, error) {
 	if saveName == "" {
 		saveName = GetRandomName(16)
 	}
-	token, err := GetMPAccessToken()
-	if err != nil {
-		return "", err
+	var apiURL string
+	if ak == "" {
+		token, err := GetMPAccessToken()
+		if err != nil {
+			return "", err
+		}
+		apiURL = fmt.Sprintf(mpQRCodeURL, token.AccessToken)
+	} else {
+		apiURL = fmt.Sprintf(mpQRCodeURL, ak)
 	}
-	apiURL := fmt.Sprintf(mpQRCodeURL, token.AccessToken)
+
 	post, _ := json.Marshal(req)
 	resp, err := http.Post(apiURL, "application/json", bytes.NewReader(post))
 	if err != nil {

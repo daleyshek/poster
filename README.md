@@ -120,7 +120,7 @@ $ curl \
 -s \
 -H "Content-Type: application/json" \
 -X POST \
--d '{"jsonrpc":"2.0","method":"Poster.Both","params":[{"scene":"15625","page":"pages/pets/petDetail/petDetail","title":"BestFriendsChina","content":"我叫小爱，今年一岁啦，领养代替买卖，赶紧扫码带我回家吧！","imageURL":"http://img.mcdsh.com/storage/images/800/O5xEIoExzNk97bRLhaIe0izqo3XbnXKi6j9BWPQb.jpeg"}],"id":1}' \
+-d '{"jsonrpc":"2.0","method":"Poster.Both","params":[{"accessToken":"小程序服务接口的access_token","scene":"15625","page":"pages/pets/petDetail/petDetail","title":"BestFriendsChina","content":"我叫小爱，今年一岁啦，领养代替买卖，赶紧扫码带我回家吧！","imageURL":"http://img.mcdsh.com/storage/images/800/O5xEIoExzNk97bRLhaIe0izqo3XbnXKi6j9BWPQb.jpeg"}],"id":1}' \
 http://127.0.0.1:2019
 ```
 
@@ -128,7 +128,7 @@ http://127.0.0.1:2019
 
 ```bash
 # 生成的小程序码和海报图片将会在output目录中
-{"id":1,"result":{"QRCodeName":"Eq3o6UnimQaFbT3B.jpg","PosterName":"eFHRiL1LNqsLjHIq.jpg"},"error":null}
+{"id":1,"result":{"QRCodeName":"lWFTlBtg1cjGmjLC.jpg","PosterName":"r9cZ0nudX7SGSj4y.jpg"},"error":null}
 ```
 
 二维码和海报都生成成功
