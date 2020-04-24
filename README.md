@@ -39,12 +39,12 @@
 ```json
 {
     "mapp": {
-        "app_id": "小程序app_id,除非命令行测试运行，否则请用自己的业务系统维护的access_token传值替代",
-        "app_secret": "小程序app_secret,除非命令行测试运行，否则请用自己的业务系统维护的access_token传值替代"
+        "app_id": "小程序app_id，可选，除非命令行测试运行，否则请用自己的业务系统维护的access_token传值替代",
+        "app_secret": "小程序app_secret，可选，除非命令行测试运行，否则请用自己的业务系统维护的access_token传值替代"
     },
-    "output_dir": "海报保存目录，默认：./output/",
-    "listen_port": "http服务监听端口，默认：2020",
-    "fontfile_path": "字体路径，默认: ./resources/font.ttc"
+    "output_dir": "海报保存目录，可选，默认：./output/",
+    "listen_port": "http服务监听端口，可选，默认：2020",
+    "fontfile_path": "字体路径，可选，默认: ./resources/font.ttc"
 }
 ```
 
@@ -61,7 +61,7 @@ page=pages/index/index&
 width=640&
 title=标题文字&
 content=内容文字&
-image_url=https://app.qiyitianbao.com/storage/images/hE9MEETr6sEVbXmUV2zzDFTXImskv5sTCiaaHKTp.jpeg&
+image_url=http://img.mcdsh.com/storage/images/800/O5xEIoExzNk97bRLhaIe0izqo3XbnXKi6j9BWPQb.jpeg&
 border_color=#ffffff
 ```
 **参数**  
@@ -103,32 +103,11 @@ Content-Type: application/json
 	"width":"640",
 	"title":"标题文字",
 	"content":"内容文字",
-	"image_url":"https://app.qiyitianbao.com/storage/images/hE9MEETr6sEVbXmUV2zzDFTXImskv5sTCiaaHKTp.jpeg",
+	"image_url":"http://img.mcdsh.com/storage/images/800/O5xEIoExzNk97bRLhaIe0izqo3XbnXKi6j9BWPQb.jpeg",
     "border_color":"#ffffff"
 }
 ```
 
-**运行结果**
-
-```bash
-$ ls
-poster resources
-
-# 查看命令行方式运行帮助
-# 如果'提示配置文件已生成，请填写完成后再次运行',可以在生成的poster.json中填写小程序的参数MPAppID和MPAppSecret，然后再次运行
-$ ./poster -h
-配置文件已生成，请填写完成后再次运行
-```
-
-配置文件poser.json，OutputDIR为空时默认输出目录为`output/`,自定义输出目录时需要在结尾加上`/`防止报错！
-
-```json
-{
-    "MPAppID": "wx02************",
-    "MPAppSecret": "1ba28*************d061b",
-    "OutputDIR": ""
-}
-```
 
 ### CLI命令行测试运行
 
@@ -143,7 +122,7 @@ $ ./poster -h
 -page=pages/pets/petDetail/petDetail
 ```
 
-输出结果  
+**输出结果**  
 
 ```bash
 运行成功
@@ -154,4 +133,5 @@ $ ./poster -h
 
 ## 总结
 
-使用http方式调用生成海报图，这种方式最简单。
+这次更新取消强制填写appid和appsecret参数，改为由用户自己实现access_token的获取并传值，解决小程序生成二维码时，access_token容易被自己的业务系统挤掉导致失败的问题。  
+移除了复杂的调用方式，使用最简单的http表单数据格式和json格式发送请求，简化到开箱即用。  
