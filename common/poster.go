@@ -10,9 +10,10 @@ import (
 	"image/jpeg"
 	"io/ioutil"
 	"log"
-	"math"
+	"math/rand"
 	"net/http"
 	"os"
+	"time"
 	"unicode"
 
 	"github.com/golang/freetype/truetype"
@@ -32,13 +33,6 @@ const (
 	// BodyHeight 信息区域240
 	BodyHeight = 240
 )
-
-// ResourceDIR 资源目录，包括字体
-var ResourceDIR string
-
-func init() {
-	ResourceDIR = "./resources/"
-}
 
 // Style 样式
 type Style struct {
@@ -75,7 +69,8 @@ func DrawPoster(s Style) (fileName string, err error) {
 	rgba := image.NewRGBA(image.Rect(0, 0, DesignWidth, DesignHeight))
 	for x := 0; x < rgba.Bounds().Dx(); x++ {
 		for y := 0; y < rgba.Bounds().Dy(); y++ {
-			rgba.Set(x, y, color.White)
+			rgba.Set(x, y, s.BorderColor)
+			// rgba.Set(x, y, color.White)
 		}
 	}
 
@@ -110,12 +105,12 @@ func DrawPoster(s Style) (fileName string, err error) {
 		draw.Src)
 
 	// 绘制边框
-	border, err := GetBorder("line")
+	border, err := GetBorder()
 	if err != nil {
 		log.Println("获取边框失败", err)
 		return "", err
 	}
-	p = Padding{20, 20, 20, 20}
+	p = Padding{20, 20, 20, 20} // w*240/1080
 	drawBorder(rgba, border, p, s.BorderColor)
 
 	// 绘制文字
@@ -153,7 +148,7 @@ func DrawPoster(s Style) (fileName string, err error) {
 	lineHeight := 1.6
 	// 加载文字字体
 	if font == nil {
-		fontFile, err := os.Open(ResourceDIR + "font.ttc")
+		fontFile, err := os.Open(C.FontFilePath)
 		if err != nil {
 			log.Println("字体加载失败", err)
 			return "", err
@@ -183,14 +178,22 @@ func DrawPoster(s Style) (fileName string, err error) {
 		pt.Y += c.PointToFixed(fontSize * lineHeight)
 	}
 
-	// 绘制二维码
+	// 获取二维码并绘制
 	qr, err := getResourceReader(s.QRCodeURL)
 	if err != nil {
 		log.Println("二维码资源获取失败", err)
 		return "", err
 	}
 	qrcode, err := jpeg.Decode(qr)
-	qrcodeResized := transform.Resize(qrcode, BodyHeight-40, BodyHeight-40, transform.Linear)
+	var qrcodeResized *image.RGBA
+	if s.BorderColor.R != 255 && s.BorderColor.G != 255 && s.BorderColor.B != 255 {
+		// 二维码扣白
+		qrcodeRGBA := fillPicWhite(qrcode, s.BorderColor)
+		qrcodeResized = transform.Resize(qrcodeRGBA.SubImage(qrcodeRGBA.Bounds()), BodyHeight-40, BodyHeight-40, transform.Linear)
+	} else {
+		qrcodeResized = transform.Resize(qrcode, BodyHeight-40, BodyHeight-40, transform.Linear)
+	}
+
 	draw.Draw(rgba,
 		image.Rectangle{
 			image.Point{int(DesignWidth/2) + int((DesignWidth/2-qrcodeResized.Bounds().Dx())/2), ImageHeight + 20},
@@ -229,33 +232,8 @@ type Border struct {
 
 // GetBorder 获取边框样式
 // 边框是一段矩形，黑点值代表边框实际占用
-func GetBorder(style string) (b Border, err error) {
-	switch style {
-	case "line":
-		b.Width = 6
-		b.Length = 80
-		b.Shape = image.NewRGBA(image.Rect(0, 0, b.Length, b.Width))
-		for x := 0; x < b.Length; x++ {
-			for y := 0; y < b.Width; y++ {
-				// 矩形边框
-				b.Shape.SetRGBA(x, y, color.RGBA{0, 0, 0, 255})
-			}
-		}
-	case "wave":
-		b.Width = 6
-		b.Length = 80
-		b.Shape = image.NewRGBA(image.Rect(0, 0, b.Length, b.Width))
-		for x := 0; x < b.Length; x++ {
-			for y := 0; y < b.Width; y++ {
-				//正弦
-				if float64(y) < (float64(b.Width)/1.732)*math.Sin(float64(x)*math.Pi/float64(b.Length)) {
-					b.Shape.SetRGBA(x, y, color.RGBA{0, 0, 0, 255})
-				}
-			}
-		}
-	default:
-		return b, errors.New("无效边框")
-	}
+func GetBorder() (b Border, err error) {
+	b.Width = 6
 	return b, nil
 }
 
@@ -270,33 +248,15 @@ type Padding struct {
 var p Padding
 
 func drawBorder(pic *image.RGBA, b Border, p Padding, c color.Color) {
-	// 从底部中间区域开始绘制
 	react := pic.Rect
-	var midx, midy int
-	midx = int(react.Dx() / 2)
-	midy = int(react.Dy() / 2)
-	black := color.RGBA{0, 0, 0, 255}
-
-	// 上下
-	for x, bx := midx, 0; x < react.Dx()-p.Right; x, bx = x+1, bx+1 {
-		for y, by := p.Bottom, 0; y < react.Dy() && by < b.Width; y, by = y+1, by+1 {
-			if b.Shape.At(bx%b.Length, by) == black {
-				pic.Set(x, react.Dy()-y, c)
-				pic.Set(react.Dx()-x, react.Dy()-y, c) //设置相反路径
+	for x := p.Left; x < react.Dx()-p.Right; x++ {
+		for y := p.Top; y < react.Dy()-p.Bottom; y++ {
+			if x-p.Left <= b.Width || react.Dx()-p.Right-x <= b.Width {
+				if y < react.Dy()-BodyHeight {
+					pic.Set(x, y, c)
+				}
+			} else if y-p.Top <= b.Width {
 				pic.Set(x, y, c)
-				pic.Set(react.Dx()-x, y, c)
-			}
-		}
-	}
-
-	// 左右
-	for y, bx := midy, 0; y < react.Dy()-p.Bottom; y, bx = y+1, bx+1 {
-		for x, by := p.Top, 0; x < react.Dx()-p.Bottom && by < b.Width; x, by = x+1, by+1 {
-			if b.Shape.At(bx%b.Length, by) == black {
-				pic.Set(x, react.Dy()-y, c)
-				pic.Set(react.Dx()-x, react.Dy()-y, c) //设置相反路径
-				pic.Set(x, y, c)
-				pic.Set(react.Dx()-x, y, c)
 			}
 		}
 	}
@@ -322,4 +282,31 @@ func getResourceReader(src string) (r *bytes.Reader, err error) {
 		r = bytes.NewReader(fileBytes)
 	}
 	return r, nil
+}
+
+// GetRandomName 获取随机的文件名
+func GetRandomName(length int) (name string) {
+	dic := "1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	maxL := len([]byte(dic))
+	rand.Seed(time.Now().UnixNano())
+	for i := 0; i < length; i++ {
+		name = name + string(dic[rand.Intn(maxL)])
+	}
+	return name
+}
+
+// fillPicWhite 图片扣白
+func fillPicWhite(pic image.Image, c color.Color) image.RGBA {
+	rgba := image.NewRGBA(pic.Bounds())
+	for x := 0; x < pic.Bounds().Dx(); x++ {
+		for y := 0; y < pic.Bounds().Dy(); y++ {
+			r, g, b, a := pic.At(x, y).RGBA()
+			if r > 64535 && g > 64535 && b > 64535 && a == 65535 {
+				rgba.Set(x, y, c)
+			} else {
+				rgba.Set(x, y, pic.At(x, y))
+			}
+		}
+	}
+	return *rgba
 }

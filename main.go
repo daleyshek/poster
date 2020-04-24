@@ -9,13 +9,13 @@ import (
 )
 
 func main() {
-	// common.ServeJSONRPCOverHTTP()
-	// common.ServeJSONRPC()
+	common.Init()
 	cli()
-	common.ServeJSONRPCOverHTTP()
+	common.ServeHTTP()
 	select {}
 }
 
+// 命令行测试
 func cli() {
 	cliMode := flag.Bool("cli", false, "是否使用cli mode")
 	imageURL := flag.String("imageURL", "", "图片资源")

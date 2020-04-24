@@ -36,7 +36,7 @@ func GetMPAccessToken() (MPAccessToken, error) {
 		return mpToken, nil
 	}
 	// 重新获取
-	url := fmt.Sprintf(MPGETAccessTokenURL, C.MPAppID, C.MPAppSecret)
+	url := fmt.Sprintf(MPGETAccessTokenURL, C.Mapp.AppID, C.Mapp.AppSecret)
 	resp, err := http.Get(url)
 	if err != nil {
 		return mpToken, err
@@ -61,7 +61,6 @@ const mpQRCodeURL = "https://api.weixin.qq.com/wxa/getwxacodeunlimit?access_toke
 
 // QRCodeReq 请求获取二维码的数据
 type QRCodeReq struct {
-	// AccessToken string `json:"access_token"`
 	Scene string `json:"scene"`
 	Page  string `json:"page"`
 	Width int    `json:"width"`
